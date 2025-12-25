@@ -14,6 +14,15 @@ static var editor_theme: Theme = null
 func _init():
 	set_meta("class", "ThemeAdapter")
 
+static func _create_flat_stylebox(empty_stylebox) -> StyleBoxFlat:
+	if empty_stylebox is StyleBoxFlat:
+		return empty_stylebox.duplicate(true)
+	var stylebox = StyleBoxFlat.new()
+	stylebox.content_margin_left = empty_stylebox.content_margin_left
+	stylebox.content_margin_right = empty_stylebox.content_margin_right
+	stylebox.content_margin_top = empty_stylebox.content_margin_top
+	stylebox.content_margin_bottom = empty_stylebox.content_margin_bottom
+	return stylebox
 
 # Create all custom node types for this plugin
 static func adapt_theme(theme:Theme) -> Theme:
@@ -60,24 +69,21 @@ static func adapt_theme(theme:Theme) -> Theme:
 	editor_theme.set_type_variation("ExternalMargin", "MarginContainer")
 	
 	# IF_LineEdit -> LineEdit
-	var IF_LineEdit_stylebox := LineEdit_stylebox_normal.duplicate(true)
+	var IF_LineEdit_stylebox: StyleBoxFlat = _create_flat_stylebox(LineEdit_stylebox_normal)
 	IF_LineEdit_stylebox.bg_color = dark_color_2
-	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "normal", "IF_LineEdit", IF_LineEdit_stylebox)
-	editor_theme.set_type_variation("IF_LineEdit", "LineEdit")
 	
 	# MultiRangeValuePanel -> PanelContainer
-	var MultiRangeValuePanel_stylebox_panel := PanelContainer_stylebox_panel.duplicate(true)
+	var MultiRangeValuePanel_stylebox_panel := _create_flat_stylebox(PanelContainer_stylebox_panel)
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "panel", "MultiRangeValuePanel", MultiRangeValuePanel_stylebox_panel)
 	editor_theme.set_type_variation("MultiRangeValuePanel", "PanelContainer")
 	
 	# MultiRangeValue -> LineEdit
-	var MultiRangeValue_stylebox := IF_LineEdit_stylebox.duplicate(true)
+	var MultiRangeValue_stylebox := _create_flat_stylebox(IF_LineEdit_stylebox)
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "normal", "MultiRangeValue", MultiRangeValue_stylebox)
 	editor_theme.set_type_variation("MultiRangeValue", "LineEdit")
 	
 	# MultiRangePropLabel -> Label
-	var MultiRangePropLabel_stylebox_panel := PanelContainer_stylebox_panel.duplicate(true)
-#	var MultiRangePropLabel_stylebox_panel := LineEdit_stylebox_normal.duplicate(true)
+	var MultiRangePropLabel_stylebox_panel : StyleBoxFlat = _create_flat_stylebox(PanelContainer_stylebox_panel)	
 	MultiRangePropLabel_stylebox_panel.bg_color = dark_color_3
 	MultiRangePropLabel_stylebox_panel.draw_center = true
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "normal", "MultiRangePropLabel", MultiRangePropLabel_stylebox_panel)
@@ -97,13 +103,13 @@ static func adapt_theme(theme:Theme) -> Theme:
 	editor_theme.set_type_variation("PlantTitleLineEdit", "LineEdit")
 	
 	# InspectorPanelContainer -> PanelContainer
-	var InspectorPanelContainer_stylebox := Tree_panel.duplicate(true)
+	var InspectorPanelContainer_stylebox := _create_flat_stylebox(Tree_panel)
 	InspectorPanelContainer_stylebox.draw_center = true
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "panel", "InspectorPanelContainer", InspectorPanelContainer_stylebox)
 	editor_theme.set_type_variation("InspectorPanelContainer", "PanelContainer")
 	
 	# InspectorWindowDialog -> Window
-	var InspectorWindowDialog_stylebox := Window_stylebox_panel.duplicate(true)
+	var InspectorWindowDialog_stylebox := _create_flat_stylebox(Window_stylebox_panel)
 	InspectorWindowDialog_stylebox.draw_center = true
 	InspectorWindowDialog_stylebox.bg_color = dark_color_1
 	InspectorWindowDialog_stylebox.border_color = dark_color_3
@@ -111,7 +117,7 @@ static func adapt_theme(theme:Theme) -> Theme:
 	editor_theme.set_type_variation("InspectorWindowDialog", "Window")
 	
 	# InspectorInnerPanelContainer -> PanelContainer
-	var InspectorInnerPanelContainer_stylebox := PanelContainer_stylebox_panel.duplicate(true)
+	var InspectorInnerPanelContainer_stylebox := _create_flat_stylebox(PanelContainer_stylebox_panel)
 	InspectorInnerPanelContainer_stylebox.draw_center = false
 	InspectorInnerPanelContainer_stylebox.set_border_width_all(1)
 	InspectorInnerPanelContainer_stylebox.border_color = dark_color_3
@@ -149,17 +155,18 @@ static func adapt_theme(theme:Theme) -> Theme:
 	editor_theme.set_type_variation("PropertySection", "Button")
 	
 	# PropertySubsection -> PanelContainer
-	var PropertySubsection_stylebox := PanelContainer_stylebox_panel.duplicate(true)
+	var PropertySubsection_stylebox := _create_flat_stylebox(PanelContainer_stylebox_panel)
 	PropertySubsection_stylebox.draw_center = true
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "panel", "PropertySubsection", PropertySubsection_stylebox)
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "normal", "PropertySubsection", PropertySubsection_stylebox)
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "hover", "PropertySubsection", PropertySubsection_stylebox)
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "pressed", "PropertySubsection", PropertySubsection_stylebox)
 	editor_theme.set_theme_item(Theme.DATA_TYPE_STYLEBOX, "focus", "PropertySubsection", PropertySubsection_stylebox)
+
 	editor_theme.set_type_variation("PropertySubsection", "PanelContainer")
 	
 	# ActionThumbnail_SelectionPanel -> Panel
-	var ActionThumbnail_SelectionPanel_stylebox := Button_stylebox_focus.duplicate(true)
+	var ActionThumbnail_SelectionPanel_stylebox := _create_flat_stylebox(Button_stylebox_focus)
 	ActionThumbnail_SelectionPanel_stylebox.bg_color = Color8(255, 255, 255, 51)
 	ActionThumbnail_SelectionPanel_stylebox.border_color = Color8(255, 255, 255, 255)
 	ActionThumbnail_SelectionPanel_stylebox.draw_center = true
@@ -177,6 +184,8 @@ static func adapt_theme(theme:Theme) -> Theme:
 				if is_instance_of(item, Resource):
 					item = item.duplicate(true)
 				if data_type == editor_theme.DATA_TYPE_STYLEBOX:
+					if not item is StyleBoxFlat:
+						item = _create_flat_stylebox(item)
 					match theme_item:
 						"normal", "pressed", "focus":
 							item.bg_color = dark_color_2
